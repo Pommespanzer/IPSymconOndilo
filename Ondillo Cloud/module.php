@@ -24,6 +24,7 @@ class OndiloCloud extends IPSModule
     private const METER_PER_SECOND = 'METER_PER_SECOND';
     private const CELSIUS = 'CELSIUS';
     private const CUBIC_METER = 'CUBIC_METER';
+    private const LAST_MEASURES_TYPES = ['temperature', 'ph', 'orp', 'salt', 'battery', 'tds', 'rssi'];
 
 
     public function Create()
@@ -389,7 +390,7 @@ class OndiloCloud extends IPSModule
                 $this->SetBuffer('Could not get Token', 'HTTP request failed!');
             }
         }
-        
+
         //Return current Token
         return $Token;
     }
@@ -575,7 +576,7 @@ class OndiloCloud extends IPSModule
      */
     private function GetLastMeasureData($pool_id)
     {
-        $last_measure = $this->FetchData(self::ONDILO_URL . self::LIST_POOLS . '/' . $pool_id . self::LAST_MEASURES);
+        $last_measure = $this->FetchData(self::ONDILO_URL . self::LIST_POOLS . '/' . $pool_id . self::LAST_MEASURES . '?' . http_build_query(['types' => self::LAST_MEASURES_TYPES]));
         $this->SendDebug('Last Measure',  $last_measure, 0);
         return $last_measure;
     }
