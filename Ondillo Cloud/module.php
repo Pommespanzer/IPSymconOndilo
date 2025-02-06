@@ -484,32 +484,22 @@ class OndiloCloud extends IPSModule
     {
         $user_units_json = $this->FetchData(self::ONDILO_URL . self::USER_UNITS);
         $user_units = json_decode($user_units_json);
+        $expected_units = [ 'conductivity', 'hardness', 'orp', 'pressure', 'salt', 'speed', 'temperature', 'volume' ];
         if($user_units != false)
         {
-            $conductivity = $user_units->conductivity;
-            $this->SendDebug('Ondlio conductivity', $conductivity, 0);
-            $this->WriteAttributeString('unit_conductivity', $conductivity);
-            $hardness = $user_units->hardness;
-            $this->SendDebug('Ondlio hardness', $hardness, 0);
-            $this->WriteAttributeString('unit_hardness', $hardness);
-            $orp = $user_units->orp;
-            $this->SendDebug('Ondlio orp', $orp, 0);
-            $this->WriteAttributeString('unit_orp', $orp);
-            $pressure = $user_units->pressure;
-            $this->SendDebug('Ondlio pressure', $pressure, 0);
-            $this->WriteAttributeString('unit_pressure', $pressure);
-            $salt = $user_units->salt;
-            $this->SendDebug('Ondlio salt', $salt, 0);
-            $this->WriteAttributeString('unit_salt', $salt);
-            $speed = $user_units->speed;
-            $this->SendDebug('Ondlio speed', $speed, 0);
-            $this->WriteAttributeString('unit_speed', $speed);
-            $temperature = $user_units->temperature;
-            $this->SendDebug('Ondlio temperature', $temperature, 0);
-            $this->WriteAttributeString('unit_temperature', $temperature);
-            $volume = $user_units->volume;
-            $this->SendDebug('Ondlio volume', $volume, 0);
-            $this->WriteAttributeString('unit_volume', $volume);
+            foreach ($expected_units as $expected_unit)
+            {
+                if (property_exists($user_units, $expected_unit))
+                {
+                    $unit_value = $user_units->$expected_unit;
+                    $this->SendDebug('Ondlio ' . $expected_unit, $unit_value, 0);
+                    $this->WriteAttributeString('unit_' . $expected_unit, $unit_value);
+                } else
+                {
+                    $this->SendDebug('Ondlio ' . $expected_unit, 'Not provided', 0);
+                }
+            }
+
             $this->WriteAttributeString('user_units', json_encode($user_units));
         }
         return $user_units_json;
